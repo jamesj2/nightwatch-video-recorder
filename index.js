@@ -40,7 +40,6 @@ module.exports = {
       const file = path.resolve(path.join(videoSettings.path || '', fileName))
       let ffmpegOptions = this.options(videoSettings,settings,file);
       mkdirp(path.dirname(file))
-        console.log(ffmpegOptions)
       browser.ffmpeg = require('child_process').execFile(
         'ffmpeg',
         ffmpegOptions,
