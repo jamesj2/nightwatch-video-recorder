@@ -38,24 +38,12 @@ module.exports = {
       const fileName = `${currentTest.module}-${dateTime}.${format}`
       const path = require('path')
       const file = path.resolve(path.join(videoSettings.path || '', fileName))
+      let ffmpegOptions = this.options(videoSettings,settings,file);
       mkdirp(path.dirname(file))
+        console.log(ffmpegOptions)
       browser.ffmpeg = require('child_process').execFile(
         'ffmpeg',
-        [
-          '-video_size',
-          videoSettings.resolution || '1440x900',
-          '-r',
-          videoSettings.fps || 15,
-          '-f',
-          'x11grab',
-          '-i',
-          settings.selenium_host + (videoSettings.display || ':60'),
-          '-pix_fmt',
-          videoSettings.pixel_format || 'yuv420p', // QuickTime compatibility
-          '-loglevel',
-          'error',
-          file
-        ],
+        ffmpegOptions,
         function (error, stdout, stderr) {
           browser.ffmpeg = null
           if (error) {
@@ -76,6 +64,37 @@ module.exports = {
       })
     }
     done()
+  },
+  options: function(videoSettings,settings,file) {
+      let out = [];
+      out.push('-video_size');
+      out.push(videoSettings.resolution || '1440x900');
+      out.push('-r');
+      out.push(videoSettings.fps || 15);
+      out.push('-f');
+      out.push('x11grab');
+      out.push('-i');
+      out.push(settings.selenium_host + (videoSettings.display || ':60'));
+      if (typeof videoSettings.preset != 'undefined' && videoSettings.preset != "") {
+          out.push('-preset');
+          out.push(videoSettings.preset);
+      }
+      if (typeof videoSettings.tune != 'undefined' && videoSettings.tune != "") {
+          out.push('-tune');
+          out.push(videoSettings.tune);
+      }
+      if (typeof videoSettings.pixel_format != 'undefined' && videoSettings.pixel_format != "") {
+          out.push('-pix_fmt');
+          out.push(videoSettings.pixel_format || 'yuv420p') // QuickTime compatibility
+      }
+      if (typeof videoSettings.x264 != 'undefined' && videoSettings.x264 != "") {
+          out.push('-x264opts');
+          out.push(videoSettings.x264);
+      }
+      out.push('-loglevel');
+      out.push('error');
+      out.push(file);
+      return out
   },
   stop: function (browser, done) {
     const ffmpeg = browser.ffmpeg
