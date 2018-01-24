@@ -90,6 +90,26 @@ module.exports = {
           out.push('-x264opts');
           out.push(videoSettings.x264);
       }
+      if (typeof videoSettings.vcodec != 'undefined' && videoSettings.vcodec != "") {
+        out.push('-c:v');
+        out.push(videoSettings.vcodec || 'libvpx-vp9') // QuickTime compatibility
+      }
+      if (typeof videoSettings.crf != 'undefined' && videoSettings.crf != "") {
+        out.push('-crf');
+        out.push(videoSettings.crf) // QuickTime compatibility
+      }
+      if (typeof videoSettings.minrate != 'undefined' && videoSettings.minrate != "") {
+        out.push('-minrate');
+        out.push(videoSettings.minrate) // QuickTime compatibility
+      }
+      if (typeof videoSettings.maxrate != 'undefined' && videoSettings.maxrate != "") {
+        out.push('-maxrate');
+        out.push(videoSettings.maxrate) // QuickTime compatibility
+      }
+      if (typeof videoSettings.lossless != 'undefined' && videoSettings.lossless != "") {
+        out.push('-lossless');
+        out.push(videoSettings.lossless) // QuickTime compatibility
+      }
       out.push('-loglevel');
       out.push('error');
       out.push(file);
